@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bill String Emporium</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&display=swap" rel="stylesheet">
+<style>
+/* ===== RESET & BASE ===== */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth}
+body{
+  font-family:'Cormorant Garamond',Georgia,serif;
+  background:#1a1410;
+  color:#d4c9b8;
+  min-height:100vh;
+  overflow-x:hidden;
+  background-image:
+    radial-gradient(ellipse at 20% 50%, rgba(60,40,30,0.6) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 50%, rgba(40,30,25,0.8) 0%, transparent 50%),
+    repeating-linear-gradient(90deg, transparent, transparent 60px, rgba(60,45,35,0.15) 60px, rgba(60,45,35,0.15) 61px),
+    repeating-linear-gradient(0deg, transparent, transparent 40px, rgba(50,38,30,0.1) 40px, rgba(50,38,30,0.1) 41px);
+}
+
+/* ===== STONE WALL TEXTURE ===== */
+body::before{
+  content:'';position:fixed;inset:0;
+  background-image:
+    radial-gradient(circle at 30% 25%, rgba(70,55,45,0.3) 0%, transparent 40%),
+    radial-gradient(circle at 70% 60%, rgba(55,42,35,0.4) 0%, transparent 35%),
+    radial-gradient(circle at 50% 80%, rgba(45,35,28,0.3) 0%, transparent 30%);
+  pointer-events:none;z-index:0;
+}
+
+/* ===== DRAPES / CURTAINS ===== */
+.drape-left,.drape-right{
+  position:fixed;top:0;width:80px;height:100vh;z-index:100;
+  pointer-events:none;
+}
+.drape-left{left:0;
+  background:linear-gradient(to right, #2a1f18 0%, #3d2c22 20%, #4a3629 40%, #3d2c22 60%, #2a1f18 80%, transparent 100%);
+  box-shadow:4px 0 20px rgba(0,0,0,0.5);
+}
+.drape-right{right:0;
+  background:linear-gradient(to left, #2a1f18 0%, #3d2c22 20%, #4a3629 40%, #3d2c22 60%, #2a1f18 80%, transparent 100%);
+  box-shadow:-4px 0 20px rgba(0,0,0,0.5);
+}
+.drape-left::before,.drape-right::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:12px;
+  background:repeating-linear-gradient(90deg, #5a4535 0px, #7a6048 4px, #5a4535 8px, #4a3629 12px);
+}
+.drape-detail{
+  position:fixed;top:0;z-index:101;
+  pointer-events:none;color:#4a3629;font-size:60px;
+  line-height:0.6;letter-spacing:-8px;opacity:0.3;
+}
+.drape-detail.dl{left:4px;}
+.drape-detail.dr{right:4px;transform:scaleX(-1);}
+
+/* ===== FLYING BUTTRESS ===== */
+.buttress{
+  position:fixed;width:160px;height:240px;z-index:2;pointer-events:none;
+  background:linear-gradient(135deg, rgba(80,60,45,0.25) 0%, transparent 60%);
+  border:1px solid rgba(90,70,55,0.15);
+}
+.buttress::after{
+  content:'';position:absolute;bottom:0;
+  width:100%;height:2px;
+  background:linear-gradient(90deg, rgba(120,90,70,0.2), transparent);
+}
+.buttress-bl{left:70px;bottom:40vh;transform:skewY(8deg);border-right:none;border-bottom:none;}
+.buttress-br{right:70px;bottom:40vh;transform:skewY(-8deg);border-left:none;border-bottom:none;}
+
+/* ===== PASSWORD GATE ===== */
+#password-gate{
+  position:fixed;inset:0;z-index:9999;
+  display:flex;align-items:center;justify-content:center;
+  background:radial-gradient(ellipse at center, #2a1f18 0%, #0d0a08 100%);
+  backdrop-filter:blur(8px);
+  transition:opacity 0.8s ease, visibility 0.8s ease;
+}
+#password-gate.hidden{opacity:0;visibility:hidden;pointer-events:none}
+.gate-box{
+  text-align:center;padding:60px 80px;
+  border:2px solid rgba(180,150,120,0.2);
+  background:linear-gradient(180deg, rgba(40,30,25,0.95), rgba(25,18,15,0.95));
+  position:relative;
+}
+.gate-box::before{
+  content:'';position:absolute;inset:-4px;
+  border:1px solid rgba(180,150,120,0.15);
+  pointer-events:none;
+}
+.gate-box h1{
+  font-family:'Cinzel',Georgia,serif;
+  font-weight:700;font-size:1.6rem;
+  color:#c8b89a;letter-spacing:0.3em;margin-bottom:8px;
+  text-transform:uppercase;
+}
+.gate-box p{
+  font-size:1.1rem;color:#a09078;margin-bottom:30px;
+  font-style:italic;
+}
+.gate-box input{
+  background:rgba(60,45,35,0.6);
+  border:1px solid rgba(180,150,120,0.25);
+  padding:14px 24px;font-size:1.2rem;color:#d4c9b8;
+  font-family:'Cinzel',Georgia,serif;
+  letter-spacing:0.3em;text-align:center;
+  width:220px;outline:none;transition:border 0.3s;
+}
+.gate-box input:focus{border-color:#c8b89a;}
+.gate-box button{
+  display:block;margin:20px auto 0;
+  background:transparent;border:1px solid #c8b89a;
+  color:#c8b89a;font-family:'Cinzel',Georgia,serif;
+  font-size:0.85rem;letter-spacing:0.2em;
+  padding:10px 36px;cursor:pointer;
+  text-transform:uppercase;transition:all 0.3s;
+}
+.gate-box button:hover{background:#c8b89a;color:#1a1410;}
+.gate-error{
+  color:#a0522d;font-size:0.9rem;margin-top:12px;min-height:1.4em;
+  font-style:italic;opacity:0;transition:opacity 0.3s;
+}
+.gate-error.show{opacity:1;}
+
+/* ===== HEADER ===== */
+header{
+  position:relative;z-index:10;text-align:center;
+  padding:60px 120px 40px;
+}
+h1.title{
+  font-family:'Cinzel',Georgia,serif;
+  font-weight:900;font-size:3.2rem;
+  color:#d4c9b8;letter-spacing:0.15em;
+  text-transform:uppercase;
+  text-shadow:0 2px 12px rgba(0,0,0,0.5);
+}
+.title-line{
+  width:120px;height:2px;
+  background:linear-gradient(90deg, transparent, #c8b89a, transparent);
+  margin:16px auto;
+}
+.subtitle{
+  font-size:1.15rem;color:#a09078;
+  font-style:italic;letter-spacing:0.1em;
+}
+
+/* ===== GALLERY ===== */
+.gallery-wrap{
+  position:relative;z-index:5;
+  padding:20px 140px 80px;
+  max-width:1200px;margin:0 auto;
+}
+.gallery{
+  display:grid;
+  grid-template-columns:repeat(3, 1fr);
+  gap:40px;
+}
+.gallery-item{
+  position:relative;overflow:hidden;
+  border:1px solid rgba(180,150,120,0.12);
+  transition:transform 0.5s ease, box-shadow 0.5s ease;
+  background:rgba(20,15,12,0.6);
+}
+.gallery-item:hover{
+  transform:translateY(-4px);
+  box-shadow:0 12px 40px rgba(0,0,0,0.4), inset 0 0 30px rgba(180,150,120,0.05);
+}
+.gallery-item img{
+  width:100%;height:auto;display:block;
+  transition:opacity 0.6s ease;
+}
+.gallery-item .caption{
+  position:absolute;bottom:0;left:0;right:0;
+  padding:20px 16px 14px;
+  background:linear-gradient(transparent, rgba(10,7,5,0.9));
+  font-family:'Cinzel',Georgia,serif;
+  font-size:0.75rem;letter-spacing:0.12em;
+  color:#c8b89a;text-transform:uppercase;
+  opacity:0;transform:translateY(8px);
+  transition:opacity 0.4s ease, transform 0.4s ease;
+}
+.gallery-item:hover .caption{
+  opacity:1;transform:translateY(0);
+}
+
+/* ===== FOOTER ===== */
+footer{
+  position:relative;z-index:5;text-align:center;
+  padding:40px 20px 60px;
+  color:#6b5d4e;font-size:0.95rem;
+  font-style:italic;
+}
+footer .sep{
+  width:60px;height:1px;
+  background:linear-gradient(90deg, transparent, #6b5d4e, transparent);
+  margin:12px auto;
+}
+
+/* ===== AMBIENT OVERLAYS ===== */
+.vignette{
+  position:fixed;inset:0;z-index:1;pointer-events:none;
+  background:radial-gradient(ellipse at center, transparent 50%, rgba(0,0,0,0.6) 100%);
+}
+
+/* ===== RESPONSIVE ===== */
+@media(max-width:900px){
+  header{padding:40px 20px 30px}
+  h1.title{font-size:2rem}
+  .gallery-wrap{padding:20px 30px 60px}
+  .gallery{grid-template-columns:repeat(2,1fr);gap:24px}
+  .drape-left,.drape-right{width:20px}
+  .buttress{display:none}
+  .drape-detail{display:none}
+}
+@media(max-width:500px){
+  .gallery{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- Password Gate -->
+<div id="password-gate">
+  <div class="gate-box">
+    <h1>Bill String Emporium</h1>
+    <p>Enter the password to enter</p>
+    <input type="password" id="gate-input" placeholder="••••" autofocus
+      onkeydown="if(event.key==='Enter')checkPass()">
+    <button onclick="checkPass()">Enter</button>
+    <div class="gate-error" id="gate-error">Incorrect password</div>
+  </div>
+</div>
+
+<!-- Drapes -->
+<div class="drape-left"></div>
+<div class="drape-right"></div>
+<div class="drape-detail dl">║║║║║║║║</div>
+<div class="drape-detail dr">║║║║║║║║</div>
+
+<!-- Flying Buttresses -->
+<div class="buttress buttress-bl"></div>
+<div class="buttress buttress-br"></div>
+
+<!-- Vignette -->
+<div class="vignette"></div>
+
+<!-- Header -->
+<header>
+  <h1 class="title">Bill String Emporium</h1>
+  <div class="title-line"></div>
+  <p class="subtitle">A collection of fine string instruments</p>
+</header>
+
+<!-- Gallery -->
+<div class="gallery-wrap">
+  <div class="gallery" id="gallery"></div>
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="sep"></div>
+  <p>Bill String Emporium — A Gallery of Fine Instruments</p>
+</footer>
+
+<script>
+// Image data
+const images = [
+  ["https://cdn.shopify.com/s/files/1/0669/7703/8470/files/b1.jpg?v=1782257473", "Double Bass — Standing Tall"],
+  ["https://cdn.shopify.com/s/files/1/0669/7703/8470/files/c1.jpg?v=1782257475", "Cello — Warm Wood"],
+  ["https://cdn.shopify.com/s/files/1/0669/7703/8470/files/v2.jpg?v=1782257478", "Violin — Golden Light"],
+  ["https://cdn.shopify.com/s/files/1/0669/7703/8470/files/b2.jpg?v=1782257474", "Double Bass — Jazz Club"],
+  ["https://cdn.shopify.com/s/files/1/0669/7703/8470/files/vc1.jpg?v=1782257479", "Violin & Cello — Duet"],
+  ["https://cdn.shopify.com/s/files/1/0669/7703/8470/files/c2.jpg?v=1782257477", "Cello — Performance Ready"],
+  ["https://cdn.shopify.com/s/files/1/0669/7703/8470/files/instrument-02.jpg?v=1782257480", "Cello — Classic Profile"],
+  ["https://cdn.shopify.com/s/files/1/0669/7703/8470/files/instrument-06.jpg?v=1782257482", "Cello — Elegant Curves"],
+];
+
+// Render gallery
+const gallery = document.getElementById('gallery');
+images.forEach(([url, alt]) => {
+  const item = document.createElement('div');
+  item.className = 'gallery-item';
+  item.innerHTML = `<img src="${url}" alt="${alt}" loading="lazy"><div class="caption">${alt}</div>`;
+  gallery.appendChild(item);
+});
+
+// Password check
+function checkPass() {
+  const input = document.getElementById('gate-input');
+  const error = document.getElementById('gate-error');
+  if (input.value.toLowerCase() === 'bill') {
+    document.getElementById('password-gate').classList.add('hidden');
+    error.classList.remove('show');
+  } else {
+    error.classList.add('show');
+    input.value = '';
+    input.focus();
+  }
+}
+</script>
+</body>
+</html>
